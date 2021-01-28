@@ -3,7 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <list>
+#include <vector>
+#include <stdexcept>
 using namespace std;
 class Baza
 {
@@ -12,9 +13,10 @@ Baza() {
 	l_o = 0; l_m = 0; l_c = 0;
 }
 void dodaj(string t , string r , string mar ,string mod,double V) {
-	bool s = false;
-	for_each(lista_p.begin(), lista_p.end(), [&](auto& it) { if (it->get_rej() != r) s = true; });
-	if (s) {
+	try {
+		if (any_of(lista_p.cbegin(), lista_p.cend(), [&](auto& it) {return  it->get_rej() == r; })) {
+			throw "Ten numer rejstracyjny jest juz w bazie!";
+		}
 		if (t == "Osobowy") {
 			unique_ptr< Pojazd > p = make_unique< Osobowy >(r, mar, mod, V);
 			lista_p.emplace_back(move(p));
@@ -33,14 +35,19 @@ void dodaj(string t , string r , string mar ,string mod,double V) {
 		else {
 			cout << "BLAD" << '\n';
 		}
-	}else cout << "Podany numer rejestracyjny jest juz w bazie" << '\n';
+	}
+	catch (const char* e) {
+		cout << e<< '\n';		
+	}
+	
 }
 void usun(string r ,string pd) {
-	bool s=false;
-	for_each(lista_p.begin(), lista_p.end(), [&](auto& it) { if (it->get_rej() == r) s = true; });
-	if (s) {
+	try {
+		if (all_of(lista_p.cbegin(), lista_p.cend(), [&](auto& it) {return  it->get_rej() != r; })) {
+			throw "Nie ma takiego numeru rejestracyjnego w bazie!";
+		}
 		auto u = find_if(lista_p.begin(), lista_p.end(), [&](auto& it) {
-			return (it->get_rej() == r); });
+		return (it->get_rej() == r); });
 		if (pd == "Osobowy")
 		{
 			l_o--;
@@ -52,9 +59,11 @@ void usun(string r ,string pd) {
 			l_c--;
 		}
 		lista_p.erase(u);
+		cout << "Pojazd usuniety z bazy" << '\n';
 	}
-	else
-			cout << "Nie ma pojazdu o takim numerze rejestracyjnym w bazie" << '\n';
+	catch (const char* e) {
+		cout << e << '\n';
+	}
 }
 const void drukuj() {
 	if (l_c == 0 && l_m == 0 && l_o == 0) {
@@ -131,6 +140,6 @@ void odczyt(string nazwa) {
 	}
 };
 private:
-list< unique_ptr<Pojazd>> lista_p;
+vector< unique_ptr<Pojazd>> lista_p;
 int l_o, l_m, l_c;
 };

@@ -7,14 +7,8 @@
 
 int main()
 { 
-    cout << "Baza Pojazdow" << '\n'<<"Polecenia:"<<'\n'
-        << "dodaj" << '\n'
-        << "usun" << '\n'
-        << "drukuj" << '\n'
-        << "wyczysc" << '\n'
-        << "zapisz" << '\n'
-        << "wczytaj" << '\n'
-        << "zamknij" << '\n';
+    const char* wstep = "Baza Pojazdow\nPolecenia:\ndodaj\nusun\ndrukuj\nwyczysc\nzapisz\nwczytaj\nzamknij\n";
+    cout << wstep;
     Interfejs i;
     while (i.get_stan())
     {
